@@ -1,0 +1,125 @@
+#include<iostream>
+#include<string>
+using namespace std;
+
+class Cbank {
+public:
+
+	int id;
+	double balance;
+	int type;
+	string name;
+
+public:
+	Cbank() {
+		id = 0;
+		balance = 0.0;
+		type = 0;
+		name = " ";
+	}
+
+	Cbank(double dval, int ival, string sval) {
+		balance = dval;
+		type = ival;
+		name = sval;
+	}
+
+	void setID(int ival) {
+		id = ival;
+	}
+
+	void setBalance(double dval) {
+		balance = dval;
+	}
+
+	void setType(int ival) {
+		type = ival;
+	}
+
+	void setName(string sval) {
+		name = sval;
+	}
+
+	int getID() {
+		return id;
+	}
+
+	double getBalance() {
+		return balance;
+	}
+
+	int getType() {
+		return type;
+	}
+
+	string getName() {
+		return name;
+	}
+
+};
+
+
+class Cuser {
+	int id;
+	string name;
+	string pass;
+
+public:
+
+	Cuser() {
+		id = 0;
+		name = " ";
+		pass = " ";
+	}
+
+	Cuser(string sval1, string sval2, int ival) {
+		id = ival;
+		name = sval1;
+		pass = sval2;
+	}
+
+	void setName(string sval) {
+		name = sval;
+	}
+
+	void setPass(string sval) {
+		pass = sval;
+	}
+
+	void setID(int ival) {
+		id = ival;
+	}
+
+	string getName() {
+		return name;
+	}
+
+	string getPass() {
+		return pass;
+	}
+
+	int getID() {
+		return id;
+	}
+
+};
+
+
+void menu();
+
+
+void reg(int n, Cbank* obj, Cuser* user);
+bool checkName(int n, string s, Cuser* user);
+bool checkPass(int n, string s, Cuser* user);
+void log(int n, int option, Cbank* obj, Cuser* user);
+//void showAll(Cuser* user, int n);
+
+
+void reorder(int n, Cbank* obj);
+void createAcc(int n, Cbank* obj, Cuser* user);
+void depositMoney(int n, Cbank* obj);
+void withdrawMoney(int n, Cbank* obj);
+void accShow(int n, Cbank* obj);
+void allAccShow(int n, Cbank* obj);
+void closeAcc(int n, Cbank* obj);
+void modifyAcc(int n, Cbank* obj);
