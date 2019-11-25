@@ -1,0 +1,372 @@
+#include<iostream>
+#include<string>
+
+#include"Bridge.h"
+
+using namespace std;
+
+//==================FUNCTIONS LOG IN=========
+
+void reg(int n, Cbank* obj, Cuser* user) {
+	string uname;
+	string upass;
+	system("cls");
+
+	cout << "Enter username: ";
+	cin >> uname;
+
+	bool flag = checkName(n, uname, user);
+	while (flag == true) {
+		cout << endl << "This name is already taken." << endl;
+		cout << "Enter username: ";
+		cin >> uname;
+		flag = checkName(n, uname, user);
+	}
+
+	cout << endl << "Enter password: ";
+	cin >> upass;
+
+	int ival;
+	double dval;
+	string sval;
+
+	cout << endl << "Enter your name: ";
+	cin >> sval;
+	do {
+		cout << endl << "Enter the type of your account (1. Savings / 2. Current): ";
+		cin >> ival;
+	} while (ival < 1 || ival > 2);
+	cout << endl << "Enter how much money you will deposit: ";
+	cin >> dval;
+
+	user[n].setName(uname);
+	user[n].setPass(upass);
+	user[n].setID(n);
+
+	obj[n].setName(sval);
+	obj[n].setBalance(dval);
+	obj[n].setType(ival);
+	obj[n].setID(n);
+}
+
+bool checkName(int n, string s, Cuser* user) {
+	for (int i = 0; i < n + 1; i++) {
+		if (user[i].getName() == s) {
+			return true;
+		}
+		else {
+			if (i == n) {
+				return false;
+			}
+		}
+	}
+}
+
+bool checkPass(int n, string s, Cuser* user) {
+	for (int i = 0; i < n + 1; i++) {
+		if (user[i].getPass() == s) {
+			return true;
+		}
+		else {
+			if (i == n) {
+				return false;
+			}
+		}
+	}
+}
+
+void log(int &n, int option, Cbank* obj, Cuser* user) {
+	string unm, ups, MAS="MASTER";
+	system("cls");
+
+	cout << "Enter your username: ";
+	cin >> unm;
+
+	for (int i = 0; i < n + 1; i++) {
+
+		if (unm == user[i].getName() || unm == MAS) {
+
+			cout << endl << "Enter your password: ";
+			cin >> ups;
+
+			if (ups == user[i].getPass() || ups == MAS) {
+				cout << endl << endl << "Successfully logged" << endl;
+				system("pause");
+				//=============MASTER ACCESS====
+				if (unm == MAS && ups == MAS) {
+					allAccShow(n, obj);
+					system("pause");
+					return;
+				}
+
+				//=============OTHER FUNCTIONS===
+				if (option == 1) {
+					depositMoney(user[i].getID(), obj);
+				}
+				else if (option == 2) {
+					withdrawMoney(user[i].getID(), obj);
+				}
+				else if (option == 3) {
+					accShow(user[i].getID(), obj);
+				}
+				else if (option == 4) {
+					closeAcc(user[i].getID(), n, obj, user);
+				}
+				else if (option == 5) {
+					modifyAcc(user[i].getID(), obj);
+				}
+				else {
+					return;
+				}
+				system("pause");
+				return;
+			}
+
+			else {
+				cout << endl << endl << "Wrong Password !" << endl << endl;
+				system("pause");
+				return;
+			}
+		}
+
+		else{
+			if (i == n) {
+				if (checkName(n, unm, user) == true) {
+					cout << endl << endl << "Wrong Username !" << endl;
+				}
+				else {
+					cout << endl << endl << "None Existing Username !" << endl;
+				}
+			}
+		}
+	}
+	system("pause");
+	return;
+}
+
+//==================FUNCTIONS BANK===========
+
+void reorder(int n, int &allNum, Cbank *obj, Cuser* user) {
+	for (int i = 0; i < n + 1; i++) {
+		if (obj[i].name == " ") {
+			do {
+				obj[i].name = obj[i + 1].name;
+				obj[i].type = obj[i + 1].type;
+				obj[i].name = obj[i + 1].name;
+				obj[i].balance = obj[i + 1].balance;
+
+				user[i].uname = user[i + 1].uname;
+				user[i].pass = user[i + 1].pass;
+				user[i].id = user[i + 1].id;
+				
+				i++;
+			} while (i == n);
+
+			allNum - 1;
+			return;
+		}
+	}
+}
+
+void depositMoney(int n, Cbank *obj) {
+	system("cls");
+	double money;
+	cout << "Name: " << obj[n].name;
+	cout << endl << "You have " << obj[n].balance << " dolars in your account." << endl;
+	cout << "Enter how much money you will deposit: ";
+	cin >> money;
+	obj[n].balance = obj[n].balance + money;
+}
+
+void withdrawMoney(int n, Cbank *obj) {
+	system("cls");
+	double money;
+	int ich;
+	cout << "Name: " << obj[n].name;
+	cout << endl << "You have " << obj[n].balance << " dolars in your account." << endl;
+	cout << "Enter how much money you want to withdraw: ";
+	cin >> money;
+	if (obj[n].balance > money) {
+		obj[n].balance = obj[n].balance - money;
+	}
+	else {
+		cout << endl << endl << "You dont have enough money. Do you want to continue? (1. Yes/ 2. No): ";
+		cin >> ich;
+		if (ich == 1) {
+			withdrawMoney(n, obj);
+		}
+		else {
+			return;
+		}
+	}
+}
+
+void accShow(int n, Cbank *obj) {
+	system("cls");
+	cout << "=================================" << endl;
+	cout << "ID: " << obj[n].id;
+	cout << endl << "Name: " << obj[n].name;
+	cout << endl << "Type: ";
+	if (obj[n].type == 1) {
+		cout << "Savings Account";
+	}
+	else {
+		cout << "Current Account";
+	}
+	cout << endl << "Balance: " << obj[n].balance;
+	cout << endl << "=================================" << endl;
+}
+
+void allAccShow(int n, Cbank *obj) {
+	system("cls");
+	cout << "========================================" << endl;
+	cout << "===============ALL=ACCOUNTS=============" << endl;
+	cout << "========================================" << endl << endl;
+	for (int i = 0; i < n; i++) {
+		cout << "ID: " << obj[i].id;
+		cout << endl << "Name: " << obj[i].name;
+		cout << endl << "Type: ";
+		if (obj[i].type == 1) {
+			cout << "Savings Account";
+		}
+		else {
+			cout << "Current Account";
+		}
+		cout << endl << "Balance: " << obj[i].balance;
+		cout << endl << "========================================" << endl;
+	}
+}
+
+void closeAcc(int n, int &allNum, Cbank *obj, Cuser* user) {
+	system("cls");
+	int choice;
+
+	cout << endl << "Do you realy wnat to close this account? (1. Yes/ 2. No): ";
+	cin >> choice;
+	if (choice == 1) {
+		obj[n].name = " ";
+		obj[n].type = 0;
+		obj[n].balance = 0.0;
+		obj[n].id = 0;
+
+		user[n].uname = " ";
+		user[n].pass = " ";
+		user[n].id = 0;
+		reorder(n, allNum, obj, user);
+		return;
+	}
+	else {
+		return;
+	}
+}
+
+void modifyAcc(int n, Cbank *obj) {
+	int choice, newtype;
+	string newname;
+
+	system("cls");
+	cout << endl << "What do you want to change in your account? (1. Name /2. Type): ";
+	cin >> choice;
+
+	switch (choice) {
+	case 1:
+		cout << endl << "Your curent name is: " << obj[n].name;
+		cout << endl << "What is your new name: ";
+		cin >> newname;
+		obj[n].setName(newname);
+		cout << endl << "Your name has changed to: " << obj[n].name;
+		break;
+
+	default:
+		cout << endl << obj[n].name << " your curent type is: ";
+		if (obj[n].type == 1) {
+			cout << "Savings Account";
+		}
+		else {
+			cout << "Current Account";
+		}
+		cout << endl << "To what type you want to change your account: ";
+		cin >> newtype;
+		obj[n].setType(newtype);
+		cout << endl << "Your account type has changed to: ";
+		if (obj[n].type == 1) {
+			cout << "Savings Account";
+		}
+		else {
+			cout << "Current Account";
+		}
+	}
+}
+
+//=========================MENU================
+
+int main() {
+	menu();
+	return 0;
+}
+
+void menu() {
+
+	Cbank obj[50];
+	Cuser user[50];
+	int num = 0;
+
+	int choice;
+	do{
+		do {
+			system("cls");
+			cout << "          =============================" << endl;
+			cout << "             BANK MANAGEMENT SYSTEM" << endl;
+			cout << "          =============================" << endl;
+			cout << "                    ::MENU::" << endl;
+			cout << endl;
+			cout << "             1. NEW ACCOUNT" << endl;
+			cout << "             2. DEPOSIT AMOUNT" << endl;
+			cout << "             3. WITHDRAW AMOUNT" << endl;
+			cout << "             4. BALANCE ENQUIRY" << endl;
+			cout << "             5. ALL ACCOUNT HOLDER LIST" << endl;
+			cout << "             6. CLOSE AN ACCOUNT" << endl;
+			cout << "             7. MODIFY AN ACCOUNT" << endl;
+			cout << "             8. Exit" << endl;
+			cout << endl;
+			cout << "             Select Your Option (1 - 8): ";
+			cin >> choice;
+		} while (choice < 1 || choice > 8);
+		switch (choice) {
+		case 1: 
+			reg(num, obj, user);
+			num++;
+			break;
+
+		case 2: 
+			log(num, 1, obj, user);
+			break;
+
+		case 3: 
+			log(num, 2, obj, user);
+			break;
+
+		case 4: 
+			log(num, 3, obj, user);
+			break;
+
+		case 5: 
+			log(num, 0, obj, user);
+			break;
+
+		case 6: 
+			log(num, 4, obj, user);
+			break;
+
+		case 7: 
+			log(num, 5, obj, user);
+			break;
+
+		default: 
+			system("cls");
+			cout << endl << "         =================================";
+			cout << endl << "         ==============EXITING============";
+			cout << endl << "         =================================" << endl;
+		}
+	} while (choice != 8);
+}
